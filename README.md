@@ -1,1 +1,1 @@
-# Una-Introducci-n-a-la-Inferencia-Variacional
+# Una-Introduccion-a-la-Inferencia-Variacional
