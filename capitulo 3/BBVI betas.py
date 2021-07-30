@@ -157,7 +157,7 @@ plt.ylabel("nu")
 plt.show()
 
 
-def uniforme1(a,b):
+def posterior(a,b):
   if b>0 and b <=a and a<1:
     ff=s_a*np.log(a)+(n_a-s_a)*np.log(1-a)+s_b*np.log(b)+(n_b-s_b)*np.log(1-b)
     ff=np.exp(ff)
@@ -165,14 +165,6 @@ def uniforme1(a,b):
     ff=0.0
   return ff
 
-def uniforme2(a,b):
-  if b>0 and a<1 and b <=a:
-    ff=np.log(beta1.pdf(a)*beta2.pdf(b)+beta2.pdf(a)*beta1.pdf(b))
-    ff=np.exp(ff)
-  else:
-    ff=0.0
-  return ff
-
 parta=125
 partb=125
 Z=np.zeros((parta,partb))
@@ -186,59 +178,20 @@ a=0
 for i in np.linspace(ainf,asup,parta):
   b=0
   for j in np.linspace(binf,bsup,partb):
-      Z[a,b]=uniforme1(i,j)
+      Z[a,b]=posterior(i,j)
       b=b+1
   a=a+1
 
-l1=np.linspace(0,1,num=10)
-plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
-plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
-plt.scatter(theta[0],theta[1],facecolors="r")
-plt.plot(l1,l1,color="r")
-plt.show()
 
 plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
 plt.colorbar().ax.set_ylabel('densidad no normalizada')
 plt.scatter(mues_a,mues_b,marker='o',color="orange",facecolors='none',label='Muestra',linewidth=1.5)
 plt.legend()
 #plt.scatter(theta[0],theta[1],facecolors="r")
-#plt.plot(l1,l1,color="r")
 plt.show()
 
 plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
-#plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
 plt.colorbar().ax.set_ylabel('densidad no normalizada')
-#plt.scatter(theta[0],theta[1],facecolors="r")
-#plt.plot(l1,l1,color="r")
 plt.show()
 
-parta=125
-partb=125
-Z=np.zeros((parta,partb))
 
-ainf=0.0
-asup=1.0
-binf=0.0
-bsup=1.0
-
-
-a=0
-for i in np.linspace(ainf,asup,parta):
-  b=0
-  for j in np.linspace(binf,bsup,partb):
-      Z[a,b]=uniforme2(i,j)
-      b=b+1
-  a=a+1
-
-plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
-plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
-plt.scatter(theta[0],theta[1],facecolors="r")
-plt.plot(l1,l1,color="r")
-plt.show()
-
-plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
-plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
-plt.colorbar().ax.set_ylabel('densidad')
-#plt.scatter(theta[0],theta[1],facecolors="r")
-#plt.plot(l1,l1,color="r")
-plt.show()
