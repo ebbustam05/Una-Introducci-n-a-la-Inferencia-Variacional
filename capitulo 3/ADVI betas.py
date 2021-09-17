@@ -17,15 +17,15 @@ plt.style.use('ggplot')
 getcontext().prec = 62
 tim_ini=time.clock()
 
-s=345 #semilla
+s=7259 #semilla
 
 np.random.seed(s)
 pars=2 # número de parámetros
 tam=100 # Monte Carlo
 tam_m=100 #muestra aproximante
 t=1
-n_a=40 # número de observaciones provenientes de theta A
-n_b=40 # número de observaciones provenientes de theta B
+n_a=100 # número de observaciones provenientes de theta A
+n_b=100 # número de observaciones provenientes de theta B
 theta_r=np.array([0.7,0.66])
 x=np.random.binomial(1,theta_r[0],size=n_a) # observaciones provenientes de theta A
 y=np.random.binomial(1,theta_r[1],size=n_b) # observaciones provenientes de theta B
@@ -145,6 +145,25 @@ timf_m=timf/60.0
 tim_mues=tim2-tim_entr
 tim_mues_mins=tim_mues/60.0
 
+print("Segundos entrenamiento: ", tim_e,sep="")
+print("Minutos entrenamiento: ", tim_e_mins,sep="")
+print("")
+print("Segundos muestreo: ", tim_mues,sep="")
+print("Minutos muestreo: ", tim_mues_mins,sep="")
+print("")
+print("Segundos total: ", timf,sep="")
+print("Minutos total: ", timf_m,sep="")
+print("")
+print("")
+print("iteraciones: ",t,sep="")
+print("media: ",media,sep="")
+print("")
+print("Reales")
+print("medias: ",theta_r,sep="")
+print("Último error: ", lambdas[np.size(lambdas)-1])
+print("")
+print("Diferencia: ",dif,sep="")
+
 
 def mezcla(a,b):
   if b>0 and b <=a and a<1:
@@ -212,9 +231,9 @@ for i in np.linspace(ainf,asup,parta):
 l1=np.linspace(0,1,num=10)
 plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
 plt.colorbar().ax.set_ylabel('densidad no normalizada')
-plt.scatter(np.exp(par[:,0])/(1.0+np.exp(par[:,0])),np.exp(par[:,0]+par[:,1])/((1.0+np.exp(par[:,0]))*(1.0+np.exp(par[:,1]))),marker='o',color="orange",facecolors='none',label='Muestra',linewidth=1.5)
+plt.scatter(np.exp(par[:,0])/(1.0+np.exp(par[:,0])),np.exp(par[:,0]+par[:,1])/((1.0+np.exp(par[:,0]))*(1.0+np.exp(par[:,1]))),marker='.',color="orange",facecolors='none',label='Muestra',linewidth=0.5)
 #plt.scatter(theta_r[0],theta_r[1],facecolors="r")
-plt.legend()
+plt.legend(markerscale=2,facecolor='white')
 plt.show()
 
 Z2=np.zeros((parta,partb))
@@ -242,21 +261,5 @@ plt.show()
 
 
 
-print("Segundos entrenamiento: ", tim_e,sep="")
-print("Minutos entrenamiento: ", tim_e_mins,sep="")
-print("")
-print("Segundos muestreo: ", tim_mues,sep="")
-print("Minutos muestreo: ", tim_mues_mins,sep="")
-print("")
-print("Segundos total: ", timf,sep="")
-print("Minutos total: ", timf_m,sep="")
-print("")
-print("")
-print("iteraciones: ",t,sep="")
-print("media: ",media,sep="")
-print("")
-print("Reales")
-print("medias: ",theta_r,sep="")
-print("Último error: ", lambdas[np.size(lambdas)-1])
-print("")
-print("Diferencia: ",dif,sep="")
+
+
