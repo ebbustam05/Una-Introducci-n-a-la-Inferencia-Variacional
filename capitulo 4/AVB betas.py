@@ -17,14 +17,14 @@ import time
 import mpmath as mp
 
 
-np.random.seed(145)
+np.random.seed(7259)
 tf.random.set_seed(289612)
 
 
 t_ini=time.time()
 
-n_a=40 # número de observaciones provenientes de theta A
-n_b=40 # número de observaciones provenientes de theta B
+n_a=100 # número de observaciones provenientes de theta A
+n_b=100 # número de observaciones provenientes de theta B
 theta = np.array([0.7,0.66])
 x_a = np.random.binomial(1,theta[0],size=n_a) # observaciones provenientes de theta A
 x_b = np.random.binomial(1,theta[1],size=n_b) # observaciones provenientes de theta B
@@ -216,7 +216,7 @@ for i in np.linspace(ainf,asup,parta):
 l1=np.linspace(0,1,num=10)
 plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
 plt.colorbar().ax.set_ylabel('densidad no normalizada')
-plt.scatter(enc_test[0:tam,0], enc_test[0:tam,1],marker='o',color="orange",facecolors='none',label='Muestra',linewidth=1.5)
+plt.scatter(enc_test[0:tam,0], enc_test[0:tam,1],marker='.',color="orange",facecolors='none',label='Muestra',linewidth=0.5)
 #plt.scatter(theta[0],theta[1],facecolors="r")
 #plt.plot(l1,l1,color="r")
 plt.show()
