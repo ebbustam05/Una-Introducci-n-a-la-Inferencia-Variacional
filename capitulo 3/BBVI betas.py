@@ -11,15 +11,15 @@ tim1=time.clock()
 
 tam=100 # tamaño muestra Monte Carlo
 tam_muestra=100 # tamaño muestra aproximante
-n_a=40 # número de observaciones provenientes de theta A
-n_b=40 # número de observaciones provenientes de theta B
-np.random.seed(345)
+n_a=100 # número de observaciones provenientes de theta A
+n_b=100 # número de observaciones provenientes de theta B
+np.random.seed(7259)
 theta=np.array([0.7,0.66])
 x=np.random.binomial(1,theta[0],size=n_a) # observaciones provenientes de theta A
 y=np.random.binomial(1,theta[1],size=n_b) # observaciones provenientes de theta B
 s_a=np.sum(x)
 s_b=np.sum(y)
-params=np.random.uniform(size=4)*10+10 # se inicializan parámetros de distribución aproximante
+params=np.random.uniform(size=4)*10+70 # se inicializan parámetros de distribución aproximante
 t=1
 dif=1.0
 latente=np.zeros((2,tam)) # matriz para guardar simulaciones para Monte Carlo
@@ -29,8 +29,19 @@ tiempo=np.array([t])
 parametros=params.copy() # vector para guardar historia de parámetros
 parametros=np.reshape(parametros,(4,1))
 elbo=np.array([0.0])
+mult_vec = np.array([1,1.5,1.8775,2.05,2.15])
+if tam == 100:
+  mult = mult_vec[0]
+elif tam == 250:
+  mult = mult_vec[1]
+elif tam == 500:
+  mult = mult_vec[2]
+elif tam == 750:
+  mult = mult_vec[3]
+else:
+  mult = mult_vec[4]
 
-while dif>10**-5: 
+while dif>10**-2 or t<350: 
   latente_m=np.zeros((2,tam))
   latente_m[0,:]=np.random.beta(a=params[0],b=params[1],size=tam) # generación observaciones para Monte Carlo
   latente_m[1,:]=np.random.beta(a=params[2],b=params[3],size=tam) # generación observaciones para Monte Carlo
@@ -56,7 +67,7 @@ while dif>10**-5:
   for j in range(4):
     g[j]+=(ss[j]/tam)**2 # se acumula cuadrado de gradiente
   ro=np.zeros(2)
-  ro=1.0/(np.sqrt(g)*t*np.log(t)+1) # tasa AdaGrad
+  ro=1.0/(np.sqrt(g)*mult+1) # tasa AdaGrad
   log_theta_a=np.mean(np.log(latente[0,:])) # auxiliar para obtener ELBO
   log_theta_a_1=np.mean(np.log(1-latente[0,:])) # auxiliar para obtener ELBO
   log_theta_b=np.mean(np.log(latente[1,:])) # auxiliar para obtener ELBO
@@ -157,9 +168,17 @@ plt.ylabel("nu")
 plt.show()
 
 
-def posterior(a,b):
+def uniforme1(a,b):
   if b>0 and b <=a and a<1:
     ff=s_a*np.log(a)+(n_a-s_a)*np.log(1-a)+s_b*np.log(b)+(n_b-s_b)*np.log(1-b)
+    ff=np.exp(ff)
+  else:
+    ff=0.0
+  return ff
+
+def uniforme2(a,b):
+  if b>0 and a<1 and b <=a:
+    ff=np.log(beta1.pdf(a)*beta2.pdf(b)+beta2.pdf(a)*beta1.pdf(b))
     ff=np.exp(ff)
   else:
     ff=0.0
@@ -178,20 +197,62 @@ a=0
 for i in np.linspace(ainf,asup,parta):
   b=0
   for j in np.linspace(binf,bsup,partb):
-      Z[a,b]=posterior(i,j)
+      Z[a,b]=uniforme1(i,j)
       b=b+1
   a=a+1
 
+l1=np.linspace(0,1,num=10)
+plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
+plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
+plt.scatter(theta[0],theta[1],facecolors="r")
+plt.plot(l1,l1,color="r")
+plt.show()
 
 plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
 plt.colorbar().ax.set_ylabel('densidad no normalizada')
-plt.scatter(mues_a,mues_b,marker='o',color="orange",facecolors='none',label='Muestra',linewidth=1.5)
-plt.legend()
+plt.scatter(mues_a,mues_b,marker='.',color="orange",facecolors='none',label='Muestra',linewidth=0.5)
+plt.legend(markerscale=2,facecolor='white')
 #plt.scatter(theta[0],theta[1],facecolors="r")
+#plt.plot(l1,l1,color="r")
 plt.show()
 
 plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
+#plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
 plt.colorbar().ax.set_ylabel('densidad no normalizada')
+#plt.scatter(theta[0],theta[1],facecolors="r")
+#plt.plot(l1,l1,color="r")
 plt.show()
+
+parta=125
+partb=125
+Z=np.zeros((parta,partb))
+
+ainf=0.0
+asup=1.0
+binf=0.0
+bsup=1.0
+
+
+a=0
+for i in np.linspace(ainf,asup,parta):
+  b=0
+  for j in np.linspace(binf,bsup,partb):
+      Z[a,b]=uniforme2(i,j)
+      b=b+1
+  a=a+1
+
+plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
+plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
+plt.scatter(theta[0],theta[1],facecolors="r")
+plt.plot(l1,l1,color="r")
+plt.show()
+
+plt.contourf(np.linspace(ainf,asup,parta),np.linspace(binf,bsup,partb),np.transpose(Z),levels=20)
+plt.scatter(mues_a,mues_b,facecolors="none",edgecolors="xkcd:lavender")
+plt.colorbar().ax.set_ylabel('densidad')
+#plt.scatter(theta[0],theta[1],facecolors="r")
+#plt.plot(l1,l1,color="r")
+plt.show()
+#t
 
 
